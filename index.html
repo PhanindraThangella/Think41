@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Browser History</title>
+  <style>
+    h1 {
+      text-align: center;
+    }
+    input {
+      margin-top: 150px;
+      margin-left: 300px;
+      border-radius: 30px;
+      width: 700px;
+      height: 40px;
+      padding-left: 20px;
+    }
+    button {
+      width: 80px;
+      height: 40px;
+      cursor: pointer;
+      background-color: blue;
+      border-radius: 20px;
+      color: white;
+      font-size: 12px;
+    }
+    div#addHistory {
+      width: 500px;
+      margin-left: 400px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Browser History Viewer</h1>
+  <input type="text" id="urlInput" placeholder="Enter a URL">
+  <button onclick="addUrl()">Visit Page</button>
+
+  <div id="addHistory"></div>
+
+  <script>
+    const data = [
+      { url: "https://example.com/page1", timestamp: "2025-07-18T10:15:00Z" },
+      { url: "https://example.com/page2", timestamp: "2025-07-18T11:00:00Z" },
+      { url: "https://example.com/page3", timestamp: "2025-07-18T11:45:00Z" },
+      { url: "https://example.com/page4", timestamp: "2025-07-18T12:30:00Z" }
+    ];
+
+    // Renders the last 5 most recent entries
+    function renderHistory() {
+      // Sort by newest timestamp first
+      const sortedData = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      const container = document.getElementById('addHistory');
+      container.innerHTML = ""; // Clear previous
+
+      // Show only last 5
+      const lastFive = sortedData.slice(0, 5);
+      lastFive.forEach(entry => {
+        const h3 = document.createElement('h3');
+        h3.innerHTML = `<a href="${entry.url}" target="_blank">${entry.url}</a> — ${new Date(entry.timestamp).toLocaleString()}`;
+        container.appendChild(h3);
+      });
+    }
+
+    // Checks if URL exists and updates it, or adds new
+    function addUrl() {
+      const inputElement = document.getElementById("urlInput");
+      const url = inputElement.value.trim();
+
+      if (url === "") {
+        console.warn("URL input is empty.");
+        return;
+      }
+
+      const timestamp = new Date().toISOString();
+
+      // Check if URL already exists
+      const existingIndex = data.findIndex(entry => entry.url === url);
+
+      if (existingIndex !== -1) {
+        // Remove old entry
+        data.splice(existingIndex, 1);
+      }
+
+      // Push new/updated entry
+      data.push({ url, timestamp });
+
+      inputElement.value = ""; // Clear input
+      renderHistory();         // Refresh display
+    }
+
+    // Initial render
+    renderHistory();
+  </script>
+</body>
+</html>
